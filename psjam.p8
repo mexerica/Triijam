@@ -1,27 +1,25 @@
 pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
-bk = {50, 100, 150}
-text0 = "come on, shoot me."
-spot = 1
-mun= {10, 8, 7, 6, 4, 0}
-
 function _draw()
 	cls(0)
-	print(sub(text0,0,spot), 7)
+	shake()
+	print(sub(text0,0,spot), 7) 
 	for i=1,3 do ngon(bk[i]) end
 	tambor()
-	spr(1, 50, 25, 4, 4, 1)
+	spr(enemy.x, 50, 25, 4, 4, 1)
 end
 
 function _update()
-	val = spot% (#text0+1)  
+	val = spot % (#text0+1)  
 	if (val > 0) spot+=1
 	for i=1,3 do
 		bk[i] -= 1
-		if (bk[i] == 0) bk[i] = 150
-	end 
-	if (btn(0)) then trocar(mun) end
+		if (bk[i] == 0) then bk[i] = 150 end
+	end
+	if (btnp(0)) then trocar(1) end
+	if (btnp(1)) then trocar(6)	end
+	if (btnp(2)) then atirar() end
 end
 -->8
 function tambor()
@@ -29,15 +27,15 @@ function tambor()
 	circfill(65, 70, 8, mun[1])
 	circ(65, 70, 4, mun[1] - 1)
 	circfill(85, 80, 8, mun[2])
+	circfill(85, 100, 8, mun[3])
+	circ(85, 100, 4, mun[3] - 1)
 	circ(85, 80, 4, mun[2] - 1)
-	circfill(45, 80, 8, mun[3])
-	circ(45, 80, 4, mun[3] - 1)
-	circfill(85, 100, 8, mun[4])
-	circ(85, 100, 4, mun[4] - 1)
+	circfill(65, 110, 8, mun[4])
+	circ(65, 110, 4, mun[4] - 1)
 	circfill(45, 100, 8, mun[5])
 	circ(45, 100, 4, mun[5] - 1)
-	circfill(65, 110, 8, mun[6])
-	circ(65, 110, 4, mun[6] - 1)
+	circfill(45, 80, 8, mun[6])
+	circ(45, 80, 4, mun[6] - 1)
 end
 
 function ngon(r)
@@ -47,14 +45,40 @@ function ngon(r)
     line(64 + r*cos(angle), 64 + r*sin(angle))
   end
 end
--->8
-function trocar(mun)
-	save = mun[1]
-	for i = 1,5 do
-		mun[i] = mun[i+1]
-	end
-	mun[6] = save
+
+function shake()
+ local shakex = 16-rnd(32)
+ local shakey = 16-rnd(32)
+ shakex *= int
+ shakey *= int
+ camera(shakex,shakey)
+ int = int * 0.95
+ if (int<0.05) then int = 0 end
 end
+-->8
+function atirar()
+	mun[1] = 0
+	enemy.x = 5
+	int = 2
+end
+
+function trocar(x)
+	y = 6
+	if (x == y) then y = 1 end
+	save = mun[x] 
+	deli(mun,x)
+	add(mun, save, y)
+end
+-->8
+bk = {50, 100, 150}
+text0 = "come on, shoot me."
+spot = 1
+mun = {10, 10, 10, 10, 10, 0}
+int = 0
+enemy = {
+	x = 1
+}
+
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
